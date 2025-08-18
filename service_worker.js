@@ -16,3 +16,8 @@ self.addEventListener('push', function(event) {
       clients.openWindow(event.notification.data.url)
     );
   });
+
+
+  console.log('Notification' in window);
+  console.log('PushManager' in window);
+  console.log('serviceWorker' in navigator);
