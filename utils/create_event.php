@@ -125,4 +125,19 @@ require "../includes/navbar.php";
     </form>
 </div>
 </body>
+<script>
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+    console.log("Push and Service Worker supported");
+
+    navigator.serviceWorker.register('/service_worker.js')
+        .then(reg => {
+            console.log("Service worker registered:", reg);
+        })
+        .catch(err => {
+            console.error("Service worker registration failed:", err);
+        });
+} else {
+    console.warn("Push/ServiceWorker not supported in this browser");
+}
+</script>
 </html>
