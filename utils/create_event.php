@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once "./db.php";
-require "../includes/navbar.php";
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     die("Prístup zamietnutý");
@@ -28,7 +27,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Vyplň všetky polia.";
     }
 }
+
+require __DIR__ . '/../vendor/autoload.php';
+use Minishlink\WebPush\WebPush;
+use Minishlink\WebPush\Subscription;
+
+$res = $conn->query("SELECT subscription FROM push_subscriptions");
+$subscriptions = [];
+while ($row = $res->fetch_assoc()) {
+    $subscriptions[] = $row['subscription'];
+}
+
+$auth = [
+    'VAPID' => [
+        'subject' => 'mailto:admin@domain.sk',
+        'publicKey' => 'BP4d9reUCeBwk6dLR727vt16ne56auW0FOBgx-5N-CCxpFS5hxYIftuoR5d96CEtqeeCtSNqxnkyviU3R9dIKAU',
+        'privateKey' => 'wWw0NRQamHBSAWCOb3-ydIRZJ6pjBdFa5v_9cfcretQ',
+    ],
+];
+
+$webPush = new WebPush($auth);
+
+foreach ($subscriptions as $subJson) {
+    $webPush->queueNotification(
+        Subscription::create(json_decode($subJson, true)),
+        json_encode([
+            'title' => 'Nová akcia',
+            'body' => $nazov . " (" . $od . ")"
+        ])
+    );
+}
+
+foreach ($webPush->flush() as $report) {
+    if (!$report->isSuccess()) {
+        error_log("Push failed: " . $report->getReason());
+    }
+}
 ?>
+<?php require "../includes/navbar.php"; ?>
 <!DOCTYPE html>
 <html lang="sk">
 
