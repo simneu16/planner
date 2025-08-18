@@ -1,16 +1,6 @@
 <?php
 session_start();
 require_once "./db.php";
-require __DIR__ . '/../vendor/autoload.php';
-        use Minishlink\WebPush\WebPush;
-        use Minishlink\WebPush\Subscription;
-
-error_reporting(0);
-
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    die("Prístup zamietnutý");
-}
-
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -29,38 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_bind_param($stmt, "ssssiiiii", $nazov, $od, $do, $ucebna, $kamera, $redaktor, $foto, $zvuk, $reels);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
-
-        $res = $conn->query("SELECT subscription FROM push_subscriptions");
-        $subscriptions = [];
-        while ($row = $res->fetch_assoc()) {
-            $subscriptions[] = $row['subscription'];
-        }
-
-        $auth = [
-            'VAPID' => [
-                'subject' => 'mailto:admin@domain.sk',
-                'publicKey' => 'BP4d9reUCeBwk6dLR727vt16ne56auW0FOBgx-5N-CCxpFS5hxYIftuoR5d96CEtqeeCtSNqxnkyviU3R9dIKAU',
-                'privateKey' => 'wWw0NRQamHBSAWCOb3-ydIRZJ6pjBdFa5v_9cfcretQ',
-            ],
-        ];
-
-        $webPush = new WebPush($auth);
-
-        foreach ($subscriptions as $subJson) {
-            $webPush->queueNotification(
-                Subscription::create(json_decode($subJson, true)),
-                json_encode([
-                    'title' => 'Nová akcia',
-                    'body' => $nazov . " (" . $od . ")"
-                ])
-            );
-        }
-
-        foreach ($webPush->flush() as $report) {
-            if (!$report->isSuccess()) {
-                error_log("Push failed: " . $report->getReason());
-            }
-        }
 
         header("Location: ../events.php");
         exit;
@@ -126,19 +84,4 @@ require "../includes/navbar.php";
     </form>
 </div>
 </body>
-<script>
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-    console.log("Push and Service Worker supported");
-
-    navigator.serviceWorker.register('/service_worker.js')
-        .then(reg => {
-            console.log("Service worker registered:", reg);
-        })
-        .catch(err => {
-            console.error("Service worker registration failed:", err);
-        });
-} else {
-    console.warn("Push/ServiceWorker not supported in this browser");
-}
-</script>
 </html>

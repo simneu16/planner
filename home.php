@@ -48,37 +48,11 @@ $myEvents = mysqli_fetch_all($myResult, MYSQLI_ASSOC);
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./styles.css">
-    <link rel="manifest" href="./manifest.json">
     <script src="script.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <button id="enableNotifications">Povoliť upozornenia</button>
-        <script>
-            document.getElementById("enableNotifications").addEventListener("click", () => {
-                if ('serviceWorker' in navigator && 'PushManager' in window) {
-                    navigator.serviceWorker.register('/service_worker.js', { scope: '/' }).then(swReg => {
-                        console.log('Service Worker registrovaný:', swReg);
-
-                        Notification.requestPermission().then(permission => {
-                            if (permission === 'granted') {
-                                swReg.pushManager.subscribe({
-                                    userVisibleOnly: true,
-                                    applicationServerKey: "BP4d9reUCeBwk6dLR727vt16ne56auW0FOBgx-5N-CCxpFS5hxYIftuoR5d96CEtqeeCtSNqxnkyviU3R9dIKAU"
-                                }).then(subscription => {
-                                    fetch('./utils/save_subscription.php', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify(subscription)
-                                    });
-                                });
-                            }
-                        });
-                    });
-                }
-            });
-        </script>
         <div class="row">
             <div class="col-12">
                 <div class="p-2">
