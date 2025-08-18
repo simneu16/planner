@@ -53,6 +53,31 @@ $myEvents = mysqli_fetch_all($myResult, MYSQLI_ASSOC);
 
 <body>
     <div class="container">
+        <button id="enableNotifications">Povoliť upozornenia</button>
+        <script>
+            document.getElementById("enableNotifications").addEventListener("click", () => {
+                if ('serviceWorker' in navigator && 'PushManager' in window) {
+                    navigator.serviceWorker.register('./utils/service_worker.js').then(swReg => {
+                        console.log('Service Worker registrovaný:', swReg);
+
+                        Notification.requestPermission().then(permission => {
+                            if (permission === 'granted') {
+                                swReg.pushManager.subscribe({
+                                    userVisibleOnly: true,
+                                    applicationServerKey: "BP4d9reUCeBwk6dLR727vt16ne56auW0FOBgx-5N-CCxpFS5hxYIftuoR5d96CEtqeeCtSNqxnkyviU3R9dIKAU"
+                                }).then(subscription => {
+                                    fetch('./utils/save_subscription.php', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify(subscription)
+                                    });
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+        </script>
         <div class="row">
             <div class="col-12">
                 <div class="p-2">
