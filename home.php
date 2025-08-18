@@ -48,6 +48,7 @@ $myEvents = mysqli_fetch_all($myResult, MYSQLI_ASSOC);
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./styles.css">
+    <link rel="manifest" href="./manifest.json">
     <script src="script.js"></script>
 </head>
 
@@ -57,7 +58,7 @@ $myEvents = mysqli_fetch_all($myResult, MYSQLI_ASSOC);
         <script>
             document.getElementById("enableNotifications").addEventListener("click", () => {
                 if ('serviceWorker' in navigator && 'PushManager' in window) {
-                    navigator.serviceWorker.register('./utils/service_worker.js').then(swReg => {
+                    navigator.serviceWorker.register('/service_worker.js', { scope: '/' }).then(swReg => {
                         console.log('Service Worker registrovaný:', swReg);
 
                         Notification.requestPermission().then(permission => {

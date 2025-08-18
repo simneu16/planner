@@ -1,0 +1,13 @@
+{
+    "name": "Planner",
+    "short_name": "Planner",
+    "start_url": "/",
+    "display": "standalone",
+    "icons": [
+      {
+        "src": "./assets/logo.jpg",
+        "sizes": "252x252",
+        "type": "image/jpg"
+      }
+    ]
+  }
